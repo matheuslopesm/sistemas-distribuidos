@@ -3,6 +3,7 @@ import threading
 import queue
 import time
 
+
 class Coordenador:
     def __init__(self):
         self.lider = None
@@ -12,7 +13,9 @@ class Coordenador:
 
     def inicia_coordenador(self):
         # Inicia o coordenador na porta 37701
-        self.lider = socket.gethostname()  # Coordenador inicial é aleatório entre as VMs
+        self.lider = (
+            socket.gethostname()
+        )  # Coordenador inicial é aleatório entre as VMs
         self.processos_em_funcionamento.add(self.lider)
         endereco = ("0.0.0.0", 37701)
         print(f"Coordenador {self.lider} iniciado na porta {endereco[1]}")
@@ -26,20 +29,23 @@ class Coordenador:
         while True:
             # Aguarda uma conexão de um processo
             cliente, endereco_cliente = self.lider.accept()
-            threading.Thread(target=self.lida_com_requisicao, args=(cliente, endereco_cliente)).start()
+            threading.Thread(
+                target=self.lida_com_requisicao, args=(cliente, endereco_cliente)
+            ).start()
+
 
     def eleicao_do_anel(self, remetente):
         mensagem_eleicao = {
-            'remetente': remetente,
-            'lider_atual': self.lider,
-            'processos_em_funcionamento': list(self.processos_em_funcionamento)
+            "remetente": remetente,
+            "lider_atual": self.lider,
+            "processos_em_funcionamento": list(self.processos_em_funcionamento),
         }
 
         sucessor = self.encontrar_sucessor(remetente)
 
         while True:
             try:
-                with socket.create_connection(sucessor) as conexao:
+                with socket.create_connection((sucessor, 37701)) as conexao:
                     # Envia mensagem de eleição para o sucessor
                     conexao.sendall(str(mensagem_eleicao).encode())
 
@@ -67,7 +73,9 @@ class Coordenador:
         with self.mutex:
             # Verifica se há outros processos acessando o recurso
             if not self.fila_de_requisicoes.empty():
-                print(f"Recurso ocupado. Adicionando à fila. Solicitação de {endereco_cliente}.")
+                print(
+                    f"Recurso ocupado. Adicionando à fila. Solicitação de {endereco_cliente}."
+                )
                 self.fila_de_requisicoes.put((cliente, endereco_cliente))
             else:
                 print(f"Recurso livre. Concedendo acesso a {endereco_cliente}.")
@@ -76,7 +84,9 @@ class Coordenador:
     def concede_acesso(self, cliente, endereco_cliente):
         # Adiciona hostname e timestamp ao arquivo
         with open("recurso_compartilhado.txt", "a") as arquivo:
-            arquivo.write(f"{socket.gethostname()} - {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+            arquivo.write(
+                f"{socket.gethostname()} - {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            )
 
         # Simula o acesso ao recurso compartilhado com um tempo mais realista
         tempo_processamento = 15  # 15 segundos de processamento
@@ -94,10 +104,12 @@ class Coordenador:
             cliente.sendall(b"Acesso concedido.")
             cliente.close()
 
+
 # Função para iniciar um novo coordenador quando o atual não está funcionando
 def inicia_novo_coordenador():
     novo_coordenador = Coordenador()
     novo_coordenador.inicia_coordenador()
+
 
 # Verifica se o coordenador está em execução
 def coordenador_esta_funcionando(coordenador, endereco):
@@ -106,6 +118,7 @@ def coordenador_esta_funcionando(coordenador, endereco):
             return True
     except (ConnectionRefusedError, TimeoutError):
         return False
+
 
 # Inicia o coordenador ou um novo coordenador se o atual não estiver funcionando
 coordenador = Coordenador()
