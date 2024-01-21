@@ -95,7 +95,7 @@ class Coordenador:
             cliente.close()
 
     def obter_ip(self):
-        return socket.gethostbyname(socket.gethostname())
+        return socket.gethostbyname(socket.getfqdn())
 
 # Função para iniciar um novo coordenador quando o atual não está funcionando
 def inicia_novo_coordenador():
