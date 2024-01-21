@@ -10,7 +10,7 @@ def solicita_acesso():
 
     # Envia uma mensagem de solicitação ao coordenador
     mensagem = ("Solicitação de acesso ao recurso")
-    cliente.sendall(mensagem)
+    cliente.sendall(mensagem.encode())
 
     # Aguarda a resposta do coordenador
     resposta = cliente.recv(1024)

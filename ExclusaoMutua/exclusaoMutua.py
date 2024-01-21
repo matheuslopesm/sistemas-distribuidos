@@ -3,7 +3,6 @@ import threading
 import queue
 import time
 
-
 class Coordenador:
     def __init__(self):
         self.lider = None
@@ -13,9 +12,7 @@ class Coordenador:
     def inicia_coordenador(self):
         # Inicia o coordenador em uma porta disponível
         self.lider = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.lider.bind(
-            ("0.0.0.0", 37701)
-        )  # 0 indica que a porta será atribuída automaticamente
+        self.lider.bind(('0.0.0.0', 0))  # 0 indica que a porta será atribuída automaticamente
         endereco = self.lider.getsockname()
         print(f"Coordenador iniciado na porta {endereco[1]}")
 
@@ -23,17 +20,17 @@ class Coordenador:
 
         while True:
             # Aguarda uma conexão de um processo
-            cliente, _ = self.lider.accept()
-            threading.Thread(target=self.lida_com_requisicao, args=(cliente,)).start()
+            cliente, endereco_cliente = self.lider.accept()
+            threading.Thread(target=self.lida_com_requisicao, args=(cliente, endereco_cliente)).start()
 
-    def lida_com_requisicao(self, cliente):
+    def lida_com_requisicao(self, cliente, endereco_cliente):
         with self.mutex:
             # Verifica se há outros processos acessando o recurso
             if not self.fila_de_requisicoes.empty():
-                print("Recurso ocupado. Adicionando à fila.")
-                self.fila_de_requisicoes.put(cliente)
+                print(f"Recurso ocupado. Adicionando à fila. Solicitação de {endereco_cliente}.")
+                self.fila_de_requisicoes.put((cliente, endereco_cliente))
             else:
-                print("Recurso livre. Concedendo acesso.")
+                print(f"Recurso livre. Concedendo acesso a {endereco_cliente}.")
                 self.concede_acesso(cliente)
 
     def concede_acesso(self, cliente):
@@ -42,13 +39,13 @@ class Coordenador:
         print("Acesso concedido.")
         # Libera o próximo processo na fila
         if not self.fila_de_requisicoes.empty():
-            proximo_cliente = self.fila_de_requisicoes.get()
+            proximo_cliente, endereco_proximo_cliente = self.fila_de_requisicoes.get()
+            print(f"Concedendo acesso a {endereco_proximo_cliente}.")
             proximo_cliente.sendall(b"Acesso concedido.")
             proximo_cliente.close()
         else:
             cliente.sendall(b"Acesso concedido.")
             cliente.close()
-
 
 # Inicia o coordenador
 coordenador = Coordenador()
