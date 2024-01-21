@@ -14,7 +14,7 @@ class Coordenador:
         # Inicia o coordenador em uma porta disponível
         self.lider = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.lider.bind(
-            ("0.0.0.0", 0)
+            ("0.0.0.0", 37700)
         )  # 0 indica que a porta será atribuída automaticamente
         endereco = self.lider.getsockname()
         print(f"Coordenador iniciado na porta {endereco[1]}")
