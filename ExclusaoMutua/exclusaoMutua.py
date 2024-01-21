@@ -3,7 +3,6 @@ import threading
 import queue
 import time
 
-
 class Coordenador:
     def __init__(self):
         self.lider = None
@@ -11,15 +10,17 @@ class Coordenador:
         self.mutex = threading.Lock()
 
     def inicia_coordenador(self):
-        # Inicia o coordenador na porta 8080
+        # Inicia o coordenador em uma porta disponível
         self.lider = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.lider.bind(("0.0.0.0", 3128))
+        self.lider.bind(('0.0.0.0', 0))  # 0 indica que a porta será atribuída automaticamente
+        endereco = self.lider.getsockname()
+        print(f"Coordenador iniciado na porta {endereco[1]}")
+
         self.lider.listen(5)
-        print("Coordenador iniciado na porta 8080")
 
         while True:
             # Aguarda uma conexão de um processo
-            cliente, endereco = self.lider.accept()
+            cliente, _ = self.lider.accept()
             threading.Thread(target=self.lida_com_requisicao, args=(cliente,)).start()
 
     def lida_com_requisicao(self, cliente):
@@ -41,7 +42,6 @@ class Coordenador:
         proximo_cliente = self.fila_de_requisicoes.get()
         proximo_cliente.sendall(b"Acesso concedido.")
         proximo_cliente.close()
-
 
 # Inicia o coordenador
 coordenador = Coordenador()
