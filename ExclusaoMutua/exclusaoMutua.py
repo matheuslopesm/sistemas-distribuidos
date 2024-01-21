@@ -12,7 +12,7 @@ class Coordenador:
     def inicia_coordenador(self):
         # Inicia o coordenador em uma porta disponível
         self.lider = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.lider.bind(('0.0.0.0', 37701))  # 0 indica que a porta será atribuída automaticamente
+        self.lider.bind(('0.0.0.0', 0))  # 0 indica que a porta será atribuída automaticamente
         endereco = self.lider.getsockname()
         print(f"Coordenador iniciado na porta {endereco[1]}")
 
@@ -31,16 +31,19 @@ class Coordenador:
                 self.fila_de_requisicoes.put((cliente, endereco_cliente))
             else:
                 print(f"Recurso livre. Concedendo acesso a {endereco_cliente}.")
-                self.concede_acesso(cliente)
+                self.concede_acesso(cliente, endereco_cliente)
 
-    def concede_acesso(self, cliente):
-        # Simula o acesso ao recurso compartilhado
-        time.sleep(2)
-        print("Acesso concedido.")
+    def concede_acesso(self, cliente, endereco_cliente):
+        # Simula o acesso ao recurso compartilhado com um tempo mais realista
+        tempo_processamento = 5  # 5 segundos de processamento
+        print(f"Iniciando acesso ao recurso por {tempo_processamento} segundos.")
+        time.sleep(tempo_processamento)
+        print("Acesso concluído.")
+
         # Libera o próximo processo na fila
         if not self.fila_de_requisicoes.empty():
-            proximo_cliente, endereco_proximo_cliente = self.fila_de_requisicoes.get()
-            print(f"Concedendo acesso a {endereco_proximo_cliente}.")
+            proximo_cliente, proximo_endereco_cliente = self.fila_de_requisicoes.get()
+            print(f"Concedendo acesso a {proximo_endereco_cliente}.")
             proximo_cliente.sendall(b"Acesso concedido.")
             proximo_cliente.close()
         else:
