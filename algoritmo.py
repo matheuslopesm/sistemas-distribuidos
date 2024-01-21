@@ -74,6 +74,10 @@ class Coordenador:
                 self.concede_acesso(cliente, endereco_cliente)
 
     def concede_acesso(self, cliente, endereco_cliente):
+        # Adiciona hostname e timestamp ao arquivo
+        with open("recurso_compartilhado.txt", "a") as arquivo:
+            arquivo.write(f"{socket.gethostname()} - {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+
         # Simula o acesso ao recurso compartilhado com um tempo mais realista
         tempo_processamento = 15  # 15 segundos de processamento
         print(f"Iniciando acesso ao recurso por {tempo_processamento} segundos.")
