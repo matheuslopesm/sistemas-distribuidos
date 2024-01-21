@@ -1,97 +1,48 @@
-import time
+import socket
 import threading
-import os
-import random
+import queue
+import time
 
-# Lista de IPs das máquinas
-ips = ["172.16.100.2", "172.16.100.3", "172.16.100.4", "172.16.100.5", "172.16.100.6"]
 
-# Variável para identificar o Coordenador
-coordenador_id = 0
-coordenador_ip = ips[coordenador_id]
+class Coordenador:
+    def __init__(self):
+        self.lider = None
+        self.fila_de_requisicoes = queue.Queue()
+        self.mutex = threading.Lock()
 
-# Mutex para exclusão mútua
-mutex = threading.Lock()
+    def inicia_coordenador(self):
+        # Inicia o coordenador na porta 8080
+        self.lider = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.lider.bind(("0.0.0.0", 3128))
+        self.lider.listen(5)
+        print("Coordenador iniciado na porta 8080")
 
-# Variável para identificar o líder atual
-lider_id = None
-lider_ip = None
+        while True:
+            # Aguarda uma conexão de um processo
+            cliente, endereco = self.lider.accept()
+            threading.Thread(target=self.lida_com_requisicao, args=(cliente,)).start()
 
-# Função para acessar o recurso compartilhado
-def acessar_recurso(id, hostname, timestamp):
-    global coordenador_id
-    global coordenador_ip
+    def lida_com_requisicao(self, cliente):
+        with self.mutex:
+            # Verifica se há outros processos acessando o recurso
+            if not self.fila_de_requisicoes.empty():
+                print("Recurso ocupado. Adicionando à fila.")
+                self.fila_de_requisicoes.put(cliente)
+            else:
+                print("Recurso livre. Concedendo acesso.")
+                self.fila_de_requisicoes.put(cliente)
+                self.concede_acesso()
 
-    with mutex:
-        print(f"Máquina {id} ({hostname}) está acessando o recurso compartilhado...")
-        
-        # Simula o acesso ao recurso
-        with open("recurso_compartilhado.txt", "a") as arquivo:
-            arquivo.write(f"Máquina {id} ({hostname}) acessou o recurso em {timestamp}\n")
-        
-        print(f"Acesso do Máquina {id} ({hostname}) ao recurso compartilhado concluído.")
+    def concede_acesso(self):
+        # Simula o acesso ao recurso compartilhado
+        time.sleep(2)
+        print("Acesso concedido.")
+        # Libera o próximo processo na fila
+        proximo_cliente = self.fila_de_requisicoes.get()
+        proximo_cliente.sendall(b"Acesso concedido.")
+        proximo_cliente.close()
 
-        # Simula dinamicamente a falha do coordenador após alguns acessos
-        if random.random() < 0.2:  # Aproximadamente 20% de chance de falha após cada acesso
-            falhar_coordenador(id, hostname)
 
-# Função para falhar o coordenador e iniciar o processo de eleição
-def falhar_coordenador(id, hostname):
-    global coordenador_id
-    global coordenador_ip
-
-    with mutex:
-        print(f"*** Falha detectada! Máquina {coordenador_id} ({coordenador_ip}) falhou. Iniciando eleição...")
-
-        # Simula a eleição
-        realizar_eleicao()
-
-# Função para realizar a eleição
-def realizar_eleicao():
-    global lider_id
-    global lider_ip
-
-    with mutex:
-        print("Iniciando processo de eleição...")
-
-        # Encontrar o próximo candidato a líder
-        if lider_id is None or lider_id == max(range(len(ips))):
-            candidato_id = 0
-        else:
-            candidato_id = lider_id + 1
-
-        # Notificar o próximo candidato a líder
-        print(f"Máquina {candidato_id} iniciando eleição...")
-
-        # Simular a comunicação entre as máquinas
-        time.sleep(1)
-
-        # Atualizar o líder
-        lider_id = candidato_id
-        lider_ip = ips[candidato_id]
-
-        print(f"Máquina {lider_id} ({lider_ip}) é o novo líder.")
-
-# Simulação de solicitações de acesso
-def simulacao():
-    for i, ip in enumerate(ips):
-        id = i
-        hostname = f"maquina_{i}"
-        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-
-        solicitar_acesso(id, hostname)
-        time.sleep(1)  # Aguarda um segundo antes da próxima solicitação
-        acessar_recurso(id, hostname, timestamp)
-
-# Função para solicitar acesso ao recurso
-def solicitar_acesso(id, hostname):
-    global coordenador_ip
-
-    print(f"Máquina {id} ({hostname}) está solicitando acesso ao recurso...")
-
-    # Envia solicitação para o Coordenador
-    with mutex:
-        print(f"Solicitação de Máquina {id} ({hostname}) enviada para o Coordenador {coordenador_ip}.")
-
-# Inicia a simulação
-simulacao()
+# Inicia o coordenador
+coordenador = Coordenador()
+coordenador.inicia_coordenador()
