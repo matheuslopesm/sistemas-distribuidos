@@ -3,7 +3,6 @@ import threading
 import queue
 import time
 
-
 class Coordenador:
     def __init__(self):
         self.lider = None
