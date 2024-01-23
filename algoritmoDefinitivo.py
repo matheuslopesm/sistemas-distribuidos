@@ -2,7 +2,6 @@ import time
 from random import randint
 from threading import Thread
 
-
 class Processo:
     def __init__(self) -> None:
         self.id = id
@@ -74,6 +73,8 @@ class Processo:
         Recebe o coordenador se ele for diferente de nulo e setar o recursoHabilitado como True
         e vai começar a esperar o tempo de processamento do recurso. Depois que finalizar, ele
         vai retornar o tempo e setar o isRecursoHabilitado como False e remover o processo da fila.
+
+        Processo deve escrever seu ID no txt recurso_compartilhado
         """
         coordenador = self.coordenador
         if coordenador is not None:
@@ -82,6 +83,7 @@ class Processo:
             )
             print(f"{self.tag} Iniciado processo do recurso!")
             coordenador.isRecursoHabilitado = True
+            # Escrita no TXT
             sleep = randint(5, 15)
             time.sleep(sleep)
             print(f"{self.tag} Recurso processado em {sleep}s!")
@@ -129,21 +131,35 @@ class Singleton:
 
 class Processos(Singleton):
     processos = []
+    ips = ["172.16.100.2", "172.16.100.3", "172.16.100.4", "172.16.100.5", "172.16.100.6"]
 
     def gera_processo(self):
         """
         Vai validar se o id do processo, pego randomicamente, existe. Se existir vai criar um processo
         com esse id randomico e setar o coordenador se ele existir. Ele vai ser chamado a cada 40 segundos.
+
+        adaptar para pegar um ip randomico da lista de IPs disponíveis
         """
         while True:
             valida = False
             while valida == False:
-                ran_id = randint(0, 2048)
-                valida = self.verifica_id_existente(ran_id)
-            processo = Processo(ran_id)
+                ran_ip = self.pick_random_process(self.ips)
+                valida = self.verifica_id_existente(ran_ip)
+            processo = Processo(ran_ip)
             processo.set_coordenador(self.get_coordenador())
             self.processos.append(processo)
             time.sleep(40)
+
+        # while True:
+        #     valida = False
+        #     while valida == False:
+        #         ran_id = randint(0, 2048)
+        #         valida = self.verifica_id_existente(ran_id)
+        #     processo = Processo(ran_id)
+        #     processo.set_coordenador(self.get_coordenador())
+        #     self.processos.append(processo)
+        #     time.sleep(40)
+
 
     def inativa_coordenador(self):
         """
@@ -206,6 +222,15 @@ class Processos(Singleton):
             if i.id == id:
                 return False
         return True
+    
+    def pick_random_process(vetor):
+        # Verifique se o vetor não está vazio
+        if not vetor:
+            return None
+        # Gere um índice aleatório dentro do intervalo válido
+        indice_aleatorio = randint(0, len(vetor) - 1)
+        # Retorne o item correspondente ao índice aleatório
+        return vetor[indice_aleatorio]
 
     def run(self):
         Thread(target=self.gera_processo).start()
