@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  device_ubuntu1:
+    build:
+      context: .
+    image: ubuntu-python:latest
+    networks:
+      internal_network:
+        ipv4_address: 172.19.0.2
+    container_name: ubuntu_container_1
+
+  device_ubuntu2:
+    build:
+      context: .
+    image: ubuntu-python:latest
+    networks:
+      internal_network:
+        ipv4_address: 172.19.0.3
+    container_name: ubuntu_container_2
+
+  device_ubuntu3:
+    build:
+      context: .
+    image: ubuntu-python:latest
+    networks:
+      internal_network:
+        ipv4_address: 172.19.0.4
+    container_name: ubuntu_container_3
+
+  device_ubuntu4:
+    build:
+      context: .
+    image: ubuntu-python:latest
+    networks:
+      internal_network:
+        ipv4_address: 172.19.0.5
+    container_name: ubuntu_container_4
+
+networks:
+  internal_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/16
