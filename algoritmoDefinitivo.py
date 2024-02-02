@@ -49,10 +49,8 @@ class Processo:
             Processo().gera_novo_coordenador()
         elif coordenador is not None and self.id != self.coordenador.id:
             print("\n")
-            print(
-                f"{self.tag} Solicita acesso do recurso ao coordenador {coordenador.id}!"
-            )
-            if coordenador.isRecusHabiitado == False:
+            print(f"{self.tag} Solicita acesso do recurso ao coordenador {coordenador.id}!")
+            if coordenador.isRecursoHabilitado == False:
                 self.processa_recurso()
             else:
                 coordenador.fila.append(self)
@@ -99,7 +97,7 @@ class Processo:
             if f.id == self.id:
                 coordenador.fila_remove(self)
 
-    def fila_coordenador(self, coordenador):
+    def fila_coordenador(self, coordenador_fila):
         s = []
         for f in coordenador_fila:
             s.append(f.id)
@@ -149,17 +147,6 @@ class Processos(Singleton):
             processo.set_coordenador(self.get_coordenador())
             self.processos.append(processo)
             time.sleep(40)
-
-        # while True:
-        #     valida = False
-        #     while valida == False:
-        #         ran_id = randint(0, 2048)
-        #         valida = self.verifica_id_existente(ran_id)
-        #     processo = Processo(ran_id)
-        #     processo.set_coordenador(self.get_coordenador())
-        #     self.processos.append(processo)
-        #     time.sleep(40)
-
 
     def inativa_coordenador(self):
         """
