@@ -1,7 +1,8 @@
 import random
 import time
 from random import randint
-from threading import Thread
+import uuid
+
 
 class Processo:
     def __init__(self) -> None:
@@ -46,16 +47,10 @@ class Processo:
         atribui um ID a uma máquina.
         Após isso chama a função "escolheCoordenadorAleatorio".
         """
-        idsDisponiveis = list(range(1, len(self.arrIpsMaquinas) + 1))
         for i, ip in enumerate(self.arrIpsMaquinas):
-            # Embaralha os IDs disponíveis para garantir aleatoriedade
-            random.shuffle(idsDisponiveis)
-            # Itera pelos IDs disponíveis e atribui o primeiro não atribuído
-            for idEscolhido in idsDisponiveis:
-                if idEscolhido not in self.idsJaAtribuidos:
-                    self.idsJaAtribuidos.append(idEscolhido)
-                    self.arrIpsMaquinas[i] = {"ID": idEscolhido, "IP": ip}
-                    break
+            id_maquina = str(uuid.uuid4())
+            self.idsJaAtribuidos.append(id_maquina)
+            self.arrIpsMaquinas[i] = {"ID": id_maquina, "IP": ip}
 
         self.escolheCoordenadorAleatorio()
 
@@ -147,6 +142,7 @@ class Processo:
 
     def removeDaFilaDeSolicitantes(self, maquina):
         self.filaDeEspera.remove(maquina)
+
 
 processo = Processo()
 processo.mapeiaMaquinasTeste()
