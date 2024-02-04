@@ -35,9 +35,11 @@ def solicitar_recurso():
                 print(f"{id_dispositivo} está acessando o recurso.")
                 escrever_arquivo()
             else:
-                outra_maquina = random.choice([ip for ip in ips if ip != lider])
-                print(f"{id_dispositivo} enviou uma solicitação para o líder {lider}.")
-                fila_pedidos.append((outra_maquina, time.time()))
+                outras_maquinas = [ip for ip in ips if ip != lider and ip != id_dispositivo]
+                if outras_maquinas:
+                    outra_maquina = random.choice(outras_maquinas)
+                    print(f"{id_dispositivo} enviou uma solicitação para o líder {lider}.")
+                    fila_pedidos.append((outra_maquina, time.time()))
 
 def liberar_recurso():
     global lider
