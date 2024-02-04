@@ -41,12 +41,6 @@ class Processo:
         self.atribuiIdNasMaquinas()
 
     def atribuiIdNasMaquinas(self):
-        """
-        Cria um arr (lista) de IDs já atribuídos às máquinas do docker.
-        Verifica se o ID já foi atribuído. Caso não tenha sido, realmente
-        atribui um ID a uma máquina.
-        Após isso chama a função "escolheCoordenadorAleatorio".
-        """
         for i, ip in enumerate(self.arrIpsMaquinas):
             id_maquina = str(uuid.uuid4())
             self.idsJaAtribuidos.append(id_maquina)
