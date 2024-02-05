@@ -40,6 +40,44 @@ function escolheCoordenador() {
     criaSolicitante();
 }
 
+// Tentativa de implementação da eleição do anal, vou deixar comentado por que nao vou saber implementar direitinho mas pode ajudar na logica AKDAKSDAS
+
+function escolheCoordenadorAnel() {
+
+    // // Basicamente a eleição do anel funciona assim:
+    // 1. ao detectar que o coordenador criaMaquinas, uma nova eleição é convocada
+    // 2. a escolha do coord é feita de forma incremental, ou seja, um processo X ira iniciar a eleição e escrever seu ID numa especie de pacote que ira ser passado para a maquina X=1 que também ira anotar seu ID e passar para a proxima até chegar ao final da lista de maquinas
+    // 3. Se o ID da maquina X é o maior inteiro da lista de maquinas, ela se torna o coordenador
+    // 4. se alguma outra maquina possuir ID maior que o ID de X, a maquina X desiste e passa a coordenação para a maquina de maior ID
+    // 6. importante!! -> o processo incremental deve PULAR o coordenador que acabou de cair e mandar direto para a maquina sucessora dele, ou seja de alguma forma teriamos que ou criar um array de maquinas disponíveis e remover o coord que caiu de la ou remover o que caiu direto da arrIpsMaquinas[]
+    // 5. Os outros processos sao informados do novo coordenador
+
+    let maiorID = null;
+
+    for (let i = 0; i < arrIpsMaquinas.length; i++) {
+        maiorID = (maiorID === null || arrIpsMaquinas[i] > maiorID) ? arrIpsMaquinas[i] : maiorID;
+    }
+
+
+    // teremos um problema na parte de atribuição de IDs ja que o array de maquinas possui apenas os ips como String, teriamos duas soluções:
+
+    // 1. Criar um Objeto MAQUINA que possua uma tupla (IPstring e IDint) podemos atribuir o ID de forma aleatoria ou sequencial (seria interessante se fosse random)
+
+    // 2. Arrumar alguma forma de converter o IP de da maquina de string para int e usar os numeros do IP como ID, solução rápida porém o maior ID vai ser sempre da maquina maior IP e nao de forma randomica
+
+    coordenador = arrIpsMaquinas[maiorID];
+
+    if (filaDeEspera.includes(coordenador)) {
+        removeDaFilaDeSolicitantes(coordenador);
+    }
+
+    console.log("\n");
+    console.log(`******** Coordenador: Máquina {${coordenador.ID} - ${coordenador.IP}}! ********`);
+    console.log("\n");
+    criaSolicitante();
+
+}
+
 function escolheSolicitante() {
     const solicitantes = arrIpsMaquinas.filter(ip => ip !== coordenador && ip !== maquinaAtual);
     const solicitante = solicitantes[Math.floor(Math.random() * solicitantes.length)];
