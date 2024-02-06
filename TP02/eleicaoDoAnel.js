@@ -13,6 +13,7 @@ function criaMaquinas() {
         "172.16.100.2",
         "172.16.100.3",
         "172.16.100.4",
+        "172.16.100.5",
     ];
 
     const idsDisponiveis = Array.from({ length: maquinasEscaneadas.length }, (_, index) => index + 1);
@@ -23,59 +24,71 @@ function criaMaquinas() {
     });
 
     arrIpsMaquinas.sort((a, b) => a.ID - b.ID);
+    arrAux = arrIpsMaquinas
 
-    escolheCoordenador()
+    return arrAux
 }
 
-function escolheCoordenador() {
-    coordenador = arrIpsMaquinas[Math.floor(Math.random() * arrIpsMaquinas.length)];
+function arraysSaoIguais(array1, array2) {
+    if (array1.length !== array2.length) {
+        return false;
+    }
 
-    if (filaDeEspera.includes(coordenador)) {
-        removeDaFilaDeSolicitantes(coordenador);
+    for (let i = 0; i < array1.length; i++) {
+        if (array1[i].IP !== array2[i].IP) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function filtraMaquinasAusentes() {
+    newArr = criaMaquinas();
+
+    const diferenca = arrIpsMaquinas.filter(maquina => !newArr.includes(maquina.IP));
+
+    if (arraysSaoIguais(diferenca, arrIpsMaquinas)) {
+        return;
     }
 
     console.log("\n");
-    console.log(`******** Coordenador: Máquina {${coordenador.ID} - ${coordenador.IP}}! ********`);
+    diferenca.forEach(maquinaRemover => {
+        const indexRemover = arrIpsMaquinas.findIndex(maquina => maquina.IP === maquinaRemover.IP);
+        arrIpsMaquinas.splice(indexRemover, 1);
+        console.log(`******** Máquina {${maquinaRemover.ID} - ${maquinaRemover.IP}} caiu! ********`);
+    });
     console.log("\n");
-    criaSolicitante();
+
+    for (let i = 0; i < diferenca.length; i++) {
+        const ipDiferenca = diferenca[i].IP;
+        if (filaDeEspera.includes(ipDiferenca)) {
+            removeDaFilaDeSolicitantes(ipDiferenca);
+        }
+    }
+
+    if (!arrIpsMaquinas.includes(coordenador)) {
+        coordenador = null
+    }
 }
 
-// Tentativa de implementação da eleição do anal, vou deixar comentado por que nao vou saber implementar direitinho mas pode ajudar na logica AKDAKSDAS
-
-function escolheCoordenadorAnel() {
-
-    // // Basicamente a eleição do anel funciona assim:
-    // 1. ao detectar que o coordenador criaMaquinas, uma nova eleição é convocada
-    // 2. a escolha do coord é feita de forma incremental, ou seja, um processo X ira iniciar a eleição e escrever seu ID numa especie de pacote que ira ser passado para a maquina X=1 que também ira anotar seu ID e passar para a proxima até chegar ao final da lista de maquinas
-    // 3. Se o ID da maquina X é o maior inteiro da lista de maquinas, ela se torna o coordenador
-    // 4. se alguma outra maquina possuir ID maior que o ID de X, a maquina X desiste e passa a coordenação para a maquina de maior ID
-    // 6. importante!! -> o processo incremental deve PULAR o coordenador que acabou de cair e mandar direto para a maquina sucessora dele, ou seja de alguma forma teriamos que ou criar um array de maquinas disponíveis e remover o coord que caiu de la ou remover o que caiu direto da arrIpsMaquinas[]
-    // 5. Os outros processos sao informados do novo coordenador
+function eleicaoDoAnel() {
 
     let maiorID = null;
 
-    for (let i = 0; i < arrIpsMaquinas.length; i++) {
-        maiorID = (maiorID === null || arrIpsMaquinas[i] > maiorID) ? arrIpsMaquinas[i] : maiorID;
+    if (!arrIpsMaquinas.length) {
+        console.log(`******** Nenhuma máquina disponível! ********`);
+        return
     }
 
-
-    // teremos um problema na parte de atribuição de IDs ja que o array de maquinas possui apenas os ips como String, teriamos duas soluções:
-
-    // 1. Criar um Objeto MAQUINA que possua uma tupla (IPstring e IDint) podemos atribuir o ID de forma aleatoria ou sequencial (seria interessante se fosse random)
-
-    // 2. Arrumar alguma forma de converter o IP de da maquina de string para int e usar os numeros do IP como ID, solução rápida porém o maior ID vai ser sempre da maquina maior IP e nao de forma randomica
-
-    coordenador = arrIpsMaquinas[maiorID];
-
-    if (filaDeEspera.includes(coordenador)) {
-        removeDaFilaDeSolicitantes(coordenador);
+    for (let i = 0; i < arrIpsMaquinas.length; i++) {
+        maiorID = (maiorID === null || arrIpsMaquinas[i].ID > maiorID) ? arrIpsMaquinas[i].ID : maiorID;
+        coordenador = arrIpsMaquinas[i];
     }
 
     console.log("\n");
     console.log(`******** Coordenador: Máquina {${coordenador.ID} - ${coordenador.IP}}! ********`);
     console.log("\n");
-    criaSolicitante();
-
 }
 
 function escolheSolicitante() {
@@ -89,7 +102,7 @@ function criaSolicitante() {
     const coord = coordenador;
 
     if (!coord) {
-        escolheCoordenador();
+        eleicaoDoAnel();
     }
     solicitante = escolheSolicitante();
     maquinaAtual = solicitante;
@@ -123,14 +136,13 @@ function processaRecurso() {
     recursoEmUso = true;
 
     console.log(`Consumindo recurso em 5s...`);
+    fs.appendFile("eleicaoAnel.txt", `Máquina ${solicitante.ID} - (${solicitante.IP}) consumiu em ${new Date().toLocaleString()}\n`, (err) => {
+        if (err) throw err;
+    });
 
     setTimeout(() => {
         // Verifica se solicitante ainda é o mesmo antes de acessar propriedades
         if (solicitante && solicitante.ID && solicitante.IP) {
-            fs.appendFile("./recurso_compartilhado.txt", `Máquina ${solicitante.ID} - (${solicitante.IP}) consumiu em ${new Date().toLocaleString()}\n`, (err) => {
-                if (err) throw err;
-            });
-
             console.log(`Solicitante ${aux.ID} (${aux.IP}) liberou o recurso.\n`);
             recursoEmUso = false;
 
@@ -172,8 +184,12 @@ function removeDaFilaDeSolicitantes(maquina) {
 
 // Início do processo
 criaMaquinas();
+eleicaoDoAnel();
 
 setInterval(() => {
     criaSolicitante();
-}, 20000); // 20 segundos em milissegundos
+}, 5000); // 10 segundos em milissegundos
 
+setInterval(() => {
+    filtraMaquinasAusentes()
+}, 10000)
