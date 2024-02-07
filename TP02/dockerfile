@@ -11,4 +11,4 @@ COPY . /app
 WORKDIR /app
 
 # Comando padrão para executar o script de inicialização
-CMD ["node", "./js/test.js"]
+CMD ["node", "test.js"]

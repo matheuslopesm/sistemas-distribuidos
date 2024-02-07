@@ -1,54 +1,44 @@
-version: '3'
-
 services:
-  device_ubuntu1:
-    build:
-      context: .
-    image: ubuntu-python:latest
-    networks:
-      internal_network:
-        ipv4_address: 172.19.0.2
-    container_name: ubuntu_container_1
-    environment:
-      - EXECUTE_CODE=true
-
-  device_ubuntu2:
-    build:
-      context: .
-    image: ubuntu-python:latest
-    networks:
-      internal_network:
-        ipv4_address: 172.19.0.3
-    container_name: ubuntu_container_2
-    environment:
-      - EXECUTE_CODE=false
-
-  device_ubuntu3:
-    build:
-      context: .
-    image: ubuntu-python:latest
-    networks:
-      internal_network:
-        ipv4_address: 172.19.0.4
-    container_name: ubuntu_container_3
-    environment:
-      - EXECUTE_CODE=false
-
   device_ubuntu4:
-    build:
-      context: .
-    image: ubuntu-python:latest
+    image: ubuntu:latest
+    command: sleep infinity
     networks:
       internal_network:
-        ipv4_address: 172.19.0.5
+        ipv4_address: 172.20.0.4
     container_name: ubuntu_container_4
-    environment:
-      - EXECUTE_CODE=false
+
+  device_ubuntu5:
+    image: ubuntu:latest
+    command: sleep infinity
+    networks:
+      internal_network:
+        ipv4_address: 172.20.0.5
+    container_name: ubuntu_container_5
+
+  device_ubuntu7:
+    image: ubuntu:latest
+    command: sleep infinity
+    networks:
+      internal_network:
+        ipv4_address: 172.20.0.7
+    container_name: ubuntu_container_7
+
+  device_ubuntu6:
+    image: ubuntu:latest
+    command: sleep infinity
+    networks:
+      internal_network:
+        ipv4_address: 172.20.0.6
+    container_name: ubuntu_container_6
+
+  pinger:
+    build: .
+    networks:
+      internal_network:
+
 
 networks:
   internal_network:
-    driver: bridge
     ipam:
-      driver: default
       config:
-        - subnet: 172.19.0.0/16
+        - subnet: 172.20.0.0/16

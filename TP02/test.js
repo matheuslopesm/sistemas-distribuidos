@@ -1,16 +1,11 @@
-const os = require('os');
-const ip = require('ip');
+const { exec } = require('child_process');
 
-function getLocalIps() {
-    const localIps = [];
-
-    const hostIp = ip.address();
-    console.log(`My IP address is: ${hostIp}`);
-    localIps.push(hostIp)
-    
-    return localIps
-}
-
-// Exemplo de uso
-const ipsLocais = getLocalIps();
-console.log('Endereços IP locais:', ipsLocais);
+let hostname = 'localhost';
+exec("ip route | awk '/default/ {print $3}'", (error, stdout) => {
+    if (error) {
+        console.error('cannot get outer ip address for wrapper service', error);
+    } else {
+        hostname = stdout.replace(/\n/, '');
+        console.log(hostname)
+    }
+});
