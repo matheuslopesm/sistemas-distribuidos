@@ -95,7 +95,7 @@ function escolheCoordenador() {
     }
 
     console.log("\n");
-    console.log(`******** Coordenador: Máquina {${coordenador.ID} - ${coordenador.IP}}! ********`);
+    console.log(`******** Coordenador: Máquina {${coordenador}}! ********`);
     console.log("\n");
 
     criaSolicitante();
