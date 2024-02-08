@@ -11,6 +11,11 @@ let filaDeEspera = [];
 let maquinaAtual = null;
 
 async function checkHosts() {
+    for (let ipMaq = 3; ipMaq < 12; ipMaq++) {
+        const ip = `172.16.100.${ipMaq}`;
+        arrProvisorio.push(ip);
+    }
+
     for (const device of arrProvisorio) {
         try {
             const res = await ping.promise.probe(device);
@@ -21,19 +26,16 @@ async function checkHosts() {
             console.error('Erro ocorrido ao pingar:', error);
         }
     }
+
+    return maquinasEscaneadas
 }
 
-function criaMaquinas() {
-    for (let ipMaq = 3; ipMaq < 12; ipMaq++) {
-        const ip = `172.16.100.${ipMaq}`;
-        arrProvisorio.push(ip);
-    }
+async function criaMaquinas() {
+    maquinas = await checkHosts();
 
-    checkHosts();
+    const idsDisponiveis = Array.from({ length: maquinas.length }, (_, index) => index + 1);
 
-    const idsDisponiveis = Array.from({ length: maquinasEscaneadas.length }, (_, index) => index + 1);
-
-    arrIpsMaquinas = maquinasEscaneadas.map((ip, index) => {
+    arrIpsMaquinas = maquinas.map((ip, index) => {
         const idEscolhido = idsDisponiveis[index];
         return { ID: idEscolhido, IP: ip };
     });
