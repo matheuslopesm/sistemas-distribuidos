@@ -131,10 +131,23 @@ function removeDaFilaDeSolicitantes(maquina) {
     }
 }
 
-criaMaquinas()
-eleicaoDoAnel()
-exclusaoMutua()
-
-setInterval(() => {
+async function main() {
+    await criaMaquinas();
+    eleicaoDoAnel();
     exclusaoMutua();
-}, 10000); // 10 segundos em milissegundos
+
+    setInterval(() => {
+        exclusaoMutua();
+    }, 10000); // 10 segundos em milissegundos
+}
+
+main();
+
+
+// criaMaquinas()
+// eleicaoDoAnel()
+// exclusaoMutua()
+
+// setInterval(() => {
+//     exclusaoMutua();
+// }, 10000); // 10 segundos em milissegundos
