@@ -1,9 +1,12 @@
 const fs = require('fs')
+var ping = require('ping');
 
 let coordenador = null;
 let solicitante = null;
 let recursoEmUso = false;
+let arrProvisorio = [];
 let arrIpsMaquinas = [];
+let maquinasEscaneadas = [];
 let filaDeEspera = [];
 let maquinaAtual = null;
 

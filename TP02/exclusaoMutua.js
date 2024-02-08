@@ -1,4 +1,5 @@
 const fs = require('fs')
+var ping = require('ping');
 
 let coordenador = null;
 let solicitante = null;
