@@ -54,11 +54,6 @@ async function criaMaquinas() {
 
 function eleicaoDoAnel() {
 
-    if (!arrIpsMaquinas.length) {
-        console.log(`******** Nenhuma máquina disponível! ********`);
-        return
-    }
-
     let maiorID = null;
 
     for (let i = 0; i < arrIpsMaquinas.length; i++) {
