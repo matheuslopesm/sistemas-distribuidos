@@ -1,8 +1,8 @@
 const fs = require('fs')
 var ping = require('ping');
 
-let coordenador = null;
 let recursoEmUso = false;
+let coordenador = null;
 let arrProvisorio = [];
 let arrIpsMaquinas = [];
 let maquinasEscaneadas = [];
@@ -53,17 +53,20 @@ async function criaMaquinas() {
 }
 
 function eleicaoDoAnel() {
-
     let maiorID = null;
 
     for (let i = 0; i < arrIpsMaquinas.length; i++) {
-        maiorID = (maiorID === null || arrIpsMaquinas[i].ID > maiorID) ? arrIpsMaquinas[i].ID : maiorID;
-        coordenador = arrIpsMaquinas[i];
+        if (maiorID === null || arrIpsMaquinas[i].ID > maiorID) {
+            maiorID = arrIpsMaquinas[i].ID;
+            coordenador = arrIpsMaquinas[i];
+        }
     }
 
-    console.log("\n");
-    console.log(`******** Coordenador: Máquina {${coordenador.ID} - ${coordenador.IP}}! ********`);
-    console.log("\n");
+    if (coordenador.ID || coordenador.IP) {
+        console.log("\n");
+        console.log(`******** Coordenador: Máquina ${coordenador.ID} - ${coordenador.IP}! ********`);
+        console.log("\n");
+    }
 }
 
 function exclusaoMutua() {
