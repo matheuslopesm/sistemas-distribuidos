@@ -32,13 +32,13 @@ async function checkHosts() {
 async function criaMaquinas() {
     maquinas = await checkHosts();
 
-    // maquinas = [
-    //     "172.168.100.1",
-    //     "172.168.100.2",
-    //     "172.168.100.3",
-    //     "172.168.100.4",
-    //     "172.168.100.5",
-    // ]
+    maquinas = [
+        "172.168.100.1",
+        "172.168.100.2",
+        "172.168.100.3",
+        "172.168.100.4",
+        "172.168.100.5",
+    ]
 
     const idsDisponiveis = Array.from({ length: maquinas.length }, (_, index) => index + 1);
 
