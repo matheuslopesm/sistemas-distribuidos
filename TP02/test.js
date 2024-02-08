@@ -16,7 +16,7 @@ async function ping(ip) {
 
 async function checkDevicesAvailability() {
     for (let ip_machine = 3; ip_machine <= 10; ip_machine++) {
-        const ip = `172.16.100.2`;
+        const ip = `172.16.100.3`;
         const isReachable = await ping(ip);
         if (isReachable) {
             devicesIds.push(ip_machine);
