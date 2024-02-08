@@ -10,23 +10,23 @@ let maquinasEscaneadas = [];
 let filaDeEspera = [];
 let maquinaAtual = null;
 
+async function checkHosts() {
+    for (const device of arrProvisorio) {
+        try {
+            const res = await ping.promise.probe(device);
+            if (res.alive) {
+                maquinasEscaneadas.push(device);
+            }
+        } catch (error) {
+            console.error('Erro ocorrido ao pingar:', error);
+        }
+    }
+}
+
 function criaMaquinas() {
     for (let ipMaq = 3; ipMaq < 12; ipMaq++) {
         const ip = `172.16.100.${ipMaq}`;
         arrProvisorio.push(ip);
-    }
-
-    async function checkHosts() {
-        for (const device of arrProvisorio) {
-            try {
-                const res = await ping.promise.probe(device);
-                if (res.alive) {
-                    maquinasEscaneadas.push(device);
-                }
-            } catch (error) {
-                console.error('Erro ocorrido ao pingar:', error);
-            }
-        }
     }
 
     checkHosts();
