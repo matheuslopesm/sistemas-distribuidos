@@ -142,12 +142,3 @@ async function main() {
 }
 
 main();
-
-
-// criaMaquinas()
-// eleicaoDoAnel()
-// exclusaoMutua()
-
-// setInterval(() => {
-//     exclusaoMutua();
-// }, 10000); // 10 segundos em milissegundos
