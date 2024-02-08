@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "ping": "^0.4.4",
-    "ping-wrapper": "^0.0.3"
-  }
-}
