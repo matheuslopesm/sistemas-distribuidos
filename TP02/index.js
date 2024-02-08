@@ -32,13 +32,13 @@ async function checkHosts() {
 async function criaMaquinas() {
     maquinas = await checkHosts();
 
-    maquinas = [
-        "172.168.100.1",
-        "172.168.100.2",
-        "172.168.100.3",
-        "172.168.100.4",
-        "172.168.100.5",
-    ]
+    // maquinas = [
+    //     "172.168.100.1",
+    //     "172.168.100.2",
+    //     "172.168.100.3",
+    //     "172.168.100.4",
+    //     "172.168.100.5",
+    // ]
 
     const idsDisponiveis = Array.from({ length: maquinas.length }, (_, index) => index + 1);
 
@@ -180,19 +180,17 @@ function removeDaFilaDeSolicitantes(maquina) {
 }
 
 async function main() {
-    while (true) {
-        criaMaquinas();
-        eleicaoDoAnel();
-        exclusaoMutua();
-        filtraAusentes();
-        // Espera 50 segundos (50000 milissegundos) antes de continuar para a próxima iteração
-        await new Promise(resolve => setTimeout(resolve, 50000));
-    }
-}
-
-
-setInterval(() => {
+    await criaMaquinas();
+    eleicaoDoAnel();
     exclusaoMutua();
-}, 6000); // 10 segundos em milissegundos
+
+    setInterval(() => {
+        filtraAusentes()
+    }, 1000)
+
+    setInterval(() => {
+        exclusaoMutua();
+    }, 6000); // 10 segundos em milissegundos
+}
 
 main();
