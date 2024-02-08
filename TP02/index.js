@@ -186,11 +186,11 @@ async function main() {
 
     setInterval(() => {
         filtraAusentes()
-    }, 4000)
+    }, 1000)
 
     setInterval(() => {
         exclusaoMutua();
-    }, 8000); // 10 segundos em milissegundos
+    }, 6000); // 10 segundos em milissegundos
 }
 
 main();
