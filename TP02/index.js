@@ -109,7 +109,7 @@ function processaRecurso(solicitante) {
             solicitante = null; // Reinicia solicitante apenas se não houver mais na fila
             exclusaoMutua();
         }
-    }, 10000);
+    }, 5000);
 }
 
 function povoaFilaDeSolicitantes(novoSolicitante) {
@@ -138,7 +138,7 @@ async function main() {
 
     setInterval(() => {
         exclusaoMutua();
-    }, 10000); // 10 segundos em milissegundos
+    }, 8000); // 10 segundos em milissegundos
 }
 
 main();
