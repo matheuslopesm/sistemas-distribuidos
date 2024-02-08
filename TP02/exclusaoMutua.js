@@ -3,18 +3,32 @@ const fs = require('fs')
 let coordenador = null;
 let solicitante = null;
 let recursoEmUso = false;
+let arrProvisorio = [];
 let arrIpsMaquinas = [];
+let maquinasEscaneadas = [];
 let filaDeEspera = [];
 let maquinaAtual = null;
 
 function criaMaquinas() {
-    const maquinasEscaneadas = [
-        "172.16.100.1",
-        "172.16.100.2",
-        "172.16.100.3",
-        "172.16.100.4",
-        "172.16.100.5",
-    ];
+    for (let ipMaq = 3; ipMaq < 12; ipMaq++) {
+        const ip = `172.16.100.${ipMaq}`;
+        arrProvisorio.push(ip);
+    }
+
+    async function checkHosts() {
+        for (const device of arrProvisorio) {
+            try {
+                const res = await ping.promise.probe(device);
+                if (res.alive) {
+                    maquinasEscaneadas.push(device);
+                }
+            } catch (error) {
+                console.error('Erro ocorrido ao pingar:', error);
+            }
+        }
+    }
+
+    checkHosts();
 
     const idsDisponiveis = Array.from({ length: maquinasEscaneadas.length }, (_, index) => index + 1);
 
