@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "dockerode": "^4.0.2",
     "ping": "^0.4.4"
   }
 }
