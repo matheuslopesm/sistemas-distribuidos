@@ -1,21 +1,25 @@
-const ping = require('ping');
+var ping = require('ping');
 
-const devicesIds = [];
 const devices = [];
+const hosts = [];
 
-for (let ip_machine = 1; ip_machine < 10; ip_machine++) {
+for (let ip_machine = 3; ip_machine < 12; ip_machine++) {
     const ip = `172.16.100.${ip_machine}`;
-
-    ping.promise.probe(ip)
-        .then((res) => {
-            if (res.alive) {
-                devicesIds.push(ip_machine);
-                devices.push({ "ID": ip_machine, "IP": ip });
-            }
-        })
-        .catch((err) => {
-            console.error('Error occurred while pinging:', err);
-        });
-
-    console.log(devices)
+    devices.push(ip);
 }
+
+async function checkHosts() {
+    for (const device of devices) {
+        try {
+            const res = await ping.promise.probe(device);
+            if (res.alive) {
+                hosts.push(device);
+            }
+        } catch (error) {
+            console.error('Error occurred while pinging:', error);
+        }
+    }
+    console.log(hosts);
+}
+
+checkHosts();
