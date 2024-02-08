@@ -7,37 +7,38 @@ let arrProvisorio = [];
 let arrIpsMaquinas = [];
 let maquinasEscaneadas = [];
 let filaDeEspera = [];
+let newArr = []
 
-async function checkHosts() {
-    for (let ipMaq = 3; ipMaq < 12; ipMaq++) {
-        const ip = `172.16.100.${ipMaq}`;
-        arrProvisorio.push(ip);
-    }
+// async function checkHosts() {
+//     for (let ipMaq = 3; ipMaq < 12; ipMaq++) {
+//         const ip = `172.16.100.${ipMaq}`;
+//         arrProvisorio.push(ip);
+//     }
 
-    for (const device of arrProvisorio) {
-        try {
-            const res = await ping.promise.probe(device);
-            if (res.alive) {
-                maquinasEscaneadas.push(device);
-            }
-        } catch (error) {
-            console.error('Erro ocorrido ao pingar:', error);
-        }
-    }
+//     for (const device of arrProvisorio) {
+//         try {
+//             const res = await ping.promise.probe(device);
+//             if (res.alive) {
+//                 maquinasEscaneadas.push(device);
+//             }
+//         } catch (error) {
+//             console.error('Erro ocorrido ao pingar:', error);
+//         }
+//     }
 
-    return maquinasEscaneadas
-}
+//     return maquinasEscaneadas
+// }
 
 async function criaMaquinas() {
-    maquinas = await checkHosts();
+    // maquinas = await checkHosts();
 
-    // maquinas = [
-    //     "172.168.100.1",
-    //     "172.168.100.2",
-    //     "172.168.100.3",
-    //     "172.168.100.4",
-    //     "172.168.100.5",
-    // ]
+    maquinas = [
+        "172.168.100.1",
+        "172.168.100.2",
+        "172.168.100.3",
+        "172.168.100.4",
+        "172.168.100.5",
+    ]
 
     const idsDisponiveis = Array.from({ length: maquinas.length }, (_, index) => index + 1);
 
@@ -47,9 +48,56 @@ async function criaMaquinas() {
     });
 
     arrIpsMaquinas.sort((a, b) => a.ID - b.ID);
-    arrAux = arrIpsMaquinas
 
-    return arrAux
+    // newArr.concat(arrIpsMaquinas)
+    newArr = [
+        "172.168.100.1",
+        "172.168.100.2",
+        "172.168.100.3",
+        "172.168.100.4"
+    ]
+}
+
+function arraysSaoIguais(array1, array2) {
+    if (array1.length !== array2.length) {
+        return false;
+    }
+
+    for (let i = 0; i < array1.length; i++) {
+        if (array1[i].IP !== array2[i].IP) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function filtraAusentes() {
+    const diferenca = arrIpsMaquinas.filter(maquina => !newArr.includes(maquina.IP));
+
+    if (arraysSaoIguais(diferenca, arrIpsMaquinas)) {
+        return;
+    }
+
+    console.log("\n");
+    diferenca.forEach(maquinaRemover => {
+        const indexRemover = arrIpsMaquinas.findIndex(maquina => maquina.IP === maquinaRemover.IP);
+        arrIpsMaquinas.splice(indexRemover, 1);
+        console.log(`******** Máquina {${maquinaRemover.ID} - ${maquinaRemover.IP}} caiu! ********`);
+    });
+    console.log("\n");
+
+    for (let i = 0; i < diferenca.length; i++) {
+        const ipDiferenca = diferenca[i].IP;
+        if (filaDeEspera.includes(ipDiferenca)) {
+            removeDaFilaDeSolicitantes(ipDiferenca);
+        }
+    }
+
+    if (!arrIpsMaquinas.includes(coordenador)) {
+        coordenador = null
+        eleicaoDoAnel()
+    }
 }
 
 function eleicaoDoAnel() {
@@ -115,7 +163,7 @@ function processaRecurso(solicitante) {
 function povoaFilaDeSolicitantes(novoSolicitante) {
     const jaNaFila = filaDeEspera.some(item => item.ID === novoSolicitante.ID && item.IP === novoSolicitante.IP);
 
-    if (!jaNaFila) {
+    if (!jaNaFila && novoSolicitante && novoSolicitante.ID && novoSolicitante.IP) {
         filaDeEspera.push(novoSolicitante);
         console.log("\n");
         console.log(`******** Máquina {${novoSolicitante.ID} - ${novoSolicitante.IP}} entrou na fila! ********`);
@@ -135,6 +183,10 @@ async function main() {
     await criaMaquinas();
     eleicaoDoAnel();
     exclusaoMutua();
+
+    setInterval(() => {
+        filtraAusentes()
+    }, 4000)
 
     setInterval(() => {
         exclusaoMutua();
