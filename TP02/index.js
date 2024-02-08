@@ -62,7 +62,7 @@ function eleicaoDoAnel() {
         }
     }
 
-    if (coordenador.ID || coordenador.IP) {
+    if (coordenador && coordenador.ID && coordenador.IP) {
         console.log("\n");
         console.log(`******** Coordenador: Máquina ${coordenador.ID} - ${coordenador.IP}! ********`);
         console.log("\n");
