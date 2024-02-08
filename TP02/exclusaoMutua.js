@@ -92,6 +92,11 @@ function filtraMaquinasAusentes() {
 function escolheCoordenador() {
     coordenador = arrIpsMaquinas[Math.floor(Math.random() * arrIpsMaquinas.length)];
 
+    if (!coordenador) {
+        criaMaquinas();
+        escolheCoordenador();
+    }
+
     if (filaDeEspera.includes(coordenador)) {
         removeDaFilaDeSolicitantes(coordenador);
     }
