@@ -186,13 +186,13 @@ async function main() {
         exclusaoMutua();
         filtraAusentes();
         // Espera 50 segundos (50000 milissegundos) antes de continuar para a próxima iteração
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, 50000));
     }
 }
 
 
 setInterval(() => {
     exclusaoMutua();
-}, 10000); // 10 segundos em milissegundos
+}, 6000); // 10 segundos em milissegundos
 
 main();
